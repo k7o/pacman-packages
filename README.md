@@ -116,6 +116,61 @@ makepkg -c
 repoctl add /srv/pacman/repo oras-*.pkg.tar.zst
 ```
 
+If you want, I can:
+
+- Add a short example `PKGBUILD` for one of the packages in this tree.
+- Add a small script to build all `PKGBUILD` files under the repo and collect outputs into `out/`.
+
+## Repository placement and ownership
+
+Where you place a built-package repository matters for permissions and consumption. The repository directory should be managed as a system resource and owned by `root` so package metadata can be read by pacman (which runs as root) and by server processes when served over HTTP.
+
+Recommended locations
+
+- `/srv/pacman/repo/eric` — preferred for system-hosted repos.
+- `/var/www/html/repos/eric` — if you will serve the repo over HTTP from a webserver.
+- `/opt/pacman/repo/eric` or `/usr/local/share/pacman/repo` — for local admin-managed repos.
+
+Ownership and permissions
+
+- Owner: `root:root` (or `root:<web-group>` if the webserver needs group access).
+- Directories: `755` (or `750` with a webserver group).
+- Files: `644` (or `640` with a webserver group).
+
+Example safe move and permission commands
+
+```bash
+# create destination and copy (keeps original until verified)
+sudo mkdir -p /srv/pacman/repo/eric
+sudo rsync -aHAX --progress /home/eric/pkgs/ /srv/pacman/repo/eric/
+
+# set root ownership and readable perms
+sudo chown -R root:root /srv/pacman/repo/eric
+sudo find /srv/pacman/repo/eric -type d -exec chmod 755 {} +
+sudo find /srv/pacman/repo/eric -type f -exec chmod 644 {} +
+```
+
+If you serve the repo with a webserver that runs under a specific group (for example `www-data`), set the group and tighten perms:
+
+```bash
+sudo chown -R root:www-data /srv/pacman/repo/eric
+sudo find /srv/pacman/repo/eric -type d -exec chmod 750 {} +
+sudo find /srv/pacman/repo/eric -type f -exec chmod 640 {} +
+```
+
+Update `pacman.conf` to point to the final location (example):
+
+```
+[eric]
+Server = file:///srv/pacman/repo/eric
+```
+
+Notes
+
+- Prefer serving via HTTP for easier client access and clearer permissions. If so, place files under your webserver document root or `/srv` and configure the webserver accordingly.
+- Keep repo data out of a user home directory to avoid traversal and privacy issues.
+- Automate `repo-add`/`repoctl` invocation in a root-run CI job or systemd timer that updates the repo in its final location.
+
 ## Troubleshooting
 
 - If `makepkg` fails, check that `sha512sums` match the downloaded sources; update checksums with `updpkgsums`.
@@ -127,8 +182,3 @@ repoctl add /srv/pacman/repo oras-*.pkg.tar.zst
 - Arch Wiki: PKGBUILD — https://wiki.archlinux.org/title/PKGBUILD
 - makepkg — https://wiki.archlinux.org/title/Makepkg
 - repoctl (project repository / man page) — check your distribution's packaging or upstream GitHub.
-
-If you want, I can:
-
-- Add a short example `PKGBUILD` for one of the packages in this tree.
-- Add a small script to build all `PKGBUILD` files under the repo and collect outputs into `out/`.
