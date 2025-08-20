@@ -1,0 +1,34 @@
+# Maintainer: Eric Kerst <eric.kerst@gmail.com>
+
+pkgname=regal-bin
+pkgver=0.35.1
+pkgrel=1
+_srcname=regal
+_srcver=v0.35.1
+pkgdesc="Regal is a linter, debugger and language server for Rego, making your Rego magnificent, and you the ruler of rules!"
+url="https://github.com/StyraOSS/regal"
+arch=("x86_64" "aarch64")
+license=("Apache-2.0")
+optdepends=('bash-completion: auto-completion for regal in Bash'
+            'fish-completion: auto-completion for regal in Fish'
+            'zsh-completions: auto-completion for regal in ZSH')
+source_x86_64=(
+  "${_srcname}::https://github.com/StyraOSS/regal/releases/download/${_srcver}/regal_Linux_x86_64"
+)
+source_aarch64=(
+  "${_srcname}::https://github.com/StyraOSS/regal/releases/download/${_srcver}/regal_Linux_arm64"
+)
+sha256sums_x86_64=(
+  45d7930df74fe9fa2408bbe41a6859b1711514727d63b3001ce5f9260b74cf01
+)
+sha256sums_aarch64=(
+  ac609b9b908d9066d23ebcaa64f33070323ac31c7d58463005db0a0dde7618d4
+)
+
+package() {
+    install -Dm755 "${srcdir}/${_srcname}" "${pkgdir}/usr/bin/${_srcname}"
+
+    "${pkgdir}/usr/bin/${_srcname}" completion bash | install -Dm644 /dev/stdin "${pkgdir}/usr/share/bash-completion/completions/${_srcname}"
+    "${pkgdir}/usr/bin/${_srcname}" completion fish | install -Dm644 /dev/stdin "${pkgdir}/usr/share/fish/vendor_completions.d/${_srcname}.fish"
+    "${pkgdir}/usr/bin/${_srcname}" completion zsh | install -Dm644 /dev/stdin "${pkgdir}/usr/share/zsh/site-functions/_${_srcname}"
+}
