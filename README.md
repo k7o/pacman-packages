@@ -66,6 +66,7 @@ makepkg -c
 ```
 
 Common flags:
+
 - `-s` — resolve dependencies from the repos (install required deps)
 - `-i` — install the resulting package after building
 - `-c` — clean build files after a successful build
@@ -92,6 +93,7 @@ repoctl add "$REPO_DIR" ./mypkg-1.2.3-1-x86_64.pkg.tar.zst
 If your repository is served over HTTP (for clients to use), make sure the repo directory is readable by the webserver and you run `repoctl` against the repo path it manages.
 
 repoctl documentation and source:
+
 - Project page / README (search GitHub or your distro's packaging): https://github.com/archlinuxfr/repoctl (example; your distro may host a fork)
 - man page: `man repoctl` (after installing)
 
@@ -170,6 +172,31 @@ Notes
 - Prefer serving via HTTP for easier client access and clearer permissions. If so, place files under your webserver document root or `/srv` and configure the webserver accordingly.
 - Keep repo data out of a user home directory to avoid traversal and privacy issues.
 - Automate `repo-add`/`repoctl` invocation in a root-run CI job or systemd timer that updates the repo in its final location.
+
+## Bundle
+
+This folder contains a simple bundle that builds selected PKGBUILD packages from this repository and produces a meta-package `pacman-bundle`.
+
+How it works
+
+- `packages/` contains per-package directories. Copy or edit PKGBUILD files here.
+- `bundle/PKGBUILD` is a meta-package that depends on the listed package names.
+- `scripts/build-all.sh` builds each package and puts results into `out/`.
+- `scripts/repoctl-add.sh` adds built packages to a repo using `repoctl` or `repo-add`.
+
+Quick start
+
+```sh
+cd pacman-bundle/pacman-bundle
+make build
+# then add to repo
+make repo-add REPO=/srv/pacman/repo
+```
+
+Notes
+
+- This repo expects to run on an Arch-like system with `makepkg`, `repoctl`/`repo-add` available.
+- `build-all.sh` uses `makepkg -cf` which will attempt network fetches. Run inside a chroot or container for clean builds.
 
 ## Troubleshooting
 

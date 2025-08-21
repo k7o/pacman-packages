@@ -1,0 +1,16 @@
+# Meta-package that groups favorite packages
+# Maintainer: pacman-bundle <noreply@example.com>
+pkgname=pacman-bundle
+pkgver=1.0
+pkgrel=1
+pkgdesc="Bundle of my favorite pacman packages (meta package)"
+arch=(x86_64)
+license=(MIT)
+depends=(oras repoctl flux-bin kind-bin powershell-bin rancher-k3d regal-bin)
+source=()
+sha512sums=()
+
+package() {
+  # meta-package: nothing to install
+  return 0
+}
