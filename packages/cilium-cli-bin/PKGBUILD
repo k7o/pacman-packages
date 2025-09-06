@@ -1,16 +1,16 @@
 # Maintainer: Eric Kerst <eric@test.nl>
 
 pkgname=cilium-cli-bin
-pkgver=v0.18.6
+pkgver=v0.18.7
 pkgrel=1
 _srcname=cilium
-_srcver=0.18.6
+_srcver=0.18.7
 pkgdesc="install, manage & troubleshoot Kubernetes clusters running Cilium"
 url="https://github.com/cilium/cilium-cli"
 arch=("x86_64" "aarch64")
 license=("Apache-2.0")
 optdepends=('bash-completion: auto-completion for cilium in Bash'
-			'fish-completion: auto-completion for cilium in Fish'
+			      'fish-completion: auto-completion for cilium in Fish'
             'zsh-completions: auto-completion for cilium in ZSH')
 source_x86_64=(
   "${_srcname}-linux_amd64.tar.gz::https://github.com/cilium/cilium-cli/releases/download/v${_srcver}/${_srcname}-linux-amd64.tar.gz"
@@ -19,10 +19,10 @@ source_aarch64=(
   "${_srcname}-linux_arm64.tar.gz::https://github.com/cilium/cilium-cli/releases/download/v${_srcver}/${_srcname}-linux-arm64.tar.gz"
 )
 sha256sums_x86_64=(
-  075bcc605308ff40a488d75a9a8555713dc0139d36536e032d3ebc2a1e7a9f4d
+  7f5ff96f1793ee389ef77435a72debf122f5ec253d41418fca99d2c21472016a
 )
 sha256sums_aarch64=(
-  7639c69b410c26d0276fe1297d53e9573f094b56822bd01e85153acb3ca7dd43
+  dbaa2ab4b1969f4402adf430d6a1bd914c5ab52475ec68f50b3af6fa7fe2fecc
 )
 
 package() {
